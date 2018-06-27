@@ -1,0 +1,56 @@
+--- # once inventory is gathered, call this pb against it.
+- hosts: all
+  connection: ssh
+  gather_facts: smart
+  vars:
+    webtitle: "Doc's FCaaS"
+    myname: Doc
+    webappname: "Flux-Capacitor-as-as-Service"
+    dbname: DeLorean
+  tasks:
+  - name: check hostnames
+    shell: hostname -f
+
+  - name: install a few packages we need (httpd, mariadb, php)
+    yum:
+      pkg: {{ item }}
+      state: present
+      update_cache: yes
+    with_items:
+      - httpd
+      - mariadb
+      - rh-php70
+      - MySQL-python
+
+- name: enable & start Apache (httpd)
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+
+  - name: Template content into web page
+    template:
+      src: ./web-page.html.j2
+      dest: /var/www/html/index.html
+      backup: yes
+    notify: restart apache
+
+  - name: setup a database
+    mysql_db:
+      name: {{ dbname }}
+      state: present
+
+  - name: add user to said database
+    mysql_user:
+      name: {{ myname }}
+      state: present
+      priv: '*.*:ALL'
+      password: morty
+
+  handlers:
+  - name: restart apache
+    service:
+      name: httpd
+      state: restarted
+      
+ 

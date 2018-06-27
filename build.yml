@@ -1,0 +1,36 @@
+--- # create servers and then do stuff to them
+- hosts: localhost
+  connection: local
+  gather_facts: smart
+  vars:
+    servername: webserver  #  name your webservers!
+    servertype: http       # give them a type for tagging!
+    servercount: 2         #  how many woud you like?
+    workdir:         #what's your project folder under home?
+  tasks:
+  - name: create server.tf from template
+    run_once: yes
+    template:
+      src: "~/{{ workdir }}/server.tf.j2"
+      dest: "~/{{ workdir }}/server.tf"
+      mode: 0755
+      
+  - name: create the loadbalancer.tf from template
+    run_once: yes  
+    template:
+      src: "~/{{ workdir }}/lb.tf.j2"
+      dest: "~/{{ workdir }}/loadbalancer.tf"
+      mode: 0755
+
+  - name: terraform init and apply
+    terraform:
+      project_path: "~/{{ workdir }}"
+      state: present
+      binary_path: ~/bin/terraform
+
+  - name: gather inventory from tfstate
+    run_once: yes
+    #local IPs
+    shell: cat ./terraform.tfstate|grep network_ip | cut -d\" -f 4 > ./myservers.inv
+    #public IPs
+#    shell: cat ./terraform.tfstate|grep assigned_nat_ip | cut -d\" -f 4 > ./myservers.inv

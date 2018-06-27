@@ -1,0 +1,35 @@
+--- # destroy all the configured things.
+- hosts: all
+  connection: ssh
+  gather_facts: smart
+  tasks:
+  vars:
+    servername: webserver  #  name your webservers!
+    servertype: http       # give them a type for tagging!
+    servercount: 2         #  how many woud you like?
+    workdir:         #what's your project folder under home?
+    webtitle: "Doc's FCaaS"
+    myname: Doc
+    webappname: "Flux-Capacitor-as-as-Service"
+    dbname: DeLorean
+
+  - name: "install a few packages we need (httpd)"
+    yum:
+      pkg: "{{ item }}"
+      state: absent
+      update_cache: yes
+    with_items:
+      - httpd
+      - curl
+      - wget
+
+  - name: enable & start Apache (httpd)
+    service:
+      name: httpd
+      state: stopped
+      enabled: no
+
+  - name: Template content into web page
+    file:
+      path: /var/www/html/index.html
+      state: absent

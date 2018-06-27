@@ -1,0 +1,22 @@
+resource "google_compute_instance" "webservers" {
+  count        = {{ servercount }}
+  name         = "{{ servername }}-${count.index + 1}"
+  machine_type = "n1-standard-1"
+  zone         = "us-east1-b"
+  tags         = ["http-server"]
+
+  boot_disk {
+    initialize_params {
+      image = "centos-7"
+      size  = "10"
+      type  = "pd-ssd"
+    }
+  }
+
+  network_interface {
+    network = "default"
+
+    access_config {}
+  }
+
+}

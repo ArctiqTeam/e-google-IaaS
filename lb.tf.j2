@@ -1,0 +1,10 @@
+resource "google_compute_target_pool" "webserver_pool" {
+  name      = "webserver-pool"
+  instances = ["${google_compute_instance.webservers.*.self_link}"]
+}
+
+resource "google_compute_forwarding_rule" "http_forward" {
+  name       = "http-forward"
+  target     = "${google_compute_target_pool.webserver_pool.self_link}"
+  port_range = "80"
+}
