@@ -33,7 +33,7 @@ Then run `terraform init` inside your working path.
 
 5) Edit the config.yml file next, filling in your own values in the _vars_ section. Mind the comments for hints.
 
-6) Use the `runboth.sh` to run both Ansible playbooks. You may alternatively cat the `runboth.sh` and then run each Ansible playbook run at a time, with --step to see the steps iteratively, and use -v for more verbosity.
+6) Running the Ansible playbooks with `--step` to see the steps iteratively, and use `-v` for more verbosity.
 
 
 They will create the instances based on variables that you've edited.
